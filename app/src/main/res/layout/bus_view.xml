@@ -1,90 +1,107 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="80dp"
+    android:paddingHorizontal="12dp">
+
+    <!-- TIME -->
+    <LinearLayout
+        android:id="@id/bus_time_container"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
     <TextView
         android:id="@+id/bus_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:text="10:00 PM"
-        android:textColor="#000A28"
-        android:fontFamily="sans-serif-condensed-light"
-        android:letterSpacing="0.2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="10dp" />
+        android:textSize="16sp"
+        android:gravity="center_vertical|center_horizontal"
+        android:textStyle="bold"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"
+        android:textColor="#0A1A3A"
+        android:fontFamily="@font/poppins_light"
+        />
+    </LinearLayout>
+    <!-- ROUTE -->
     <LinearLayout
         android:id="@+id/bus_route"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        app:layout_constraintStart_toEndOf="@+id/bus_time_container"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/bus_time">
+        app:layout_constraintTop_toTopOf="parent">
+
         <TextView
             android:id="@+id/bus_from"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mananthavady"
-            android:textColor="@color/black"
-            android:fontFamily="sans-serif-condensed-light"/>
+            android:textSize="14sp"
+            android:textColor="#222"
+            android:fontFamily="@font/poppins_light"/>
+
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:src="@drawable/right_arrow" />
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginHorizontal="6dp"
+            android:padding="4dp"
+            android:src="@drawable/right_arrow"/>
+
         <TextView
             android:id="@+id/bus_to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Niravilpuzha"
-            android:textColor="@color/black"
-            android:fontFamily="sans-serif-condensed-light"/>
+            android:textSize="14sp"
+            android:textColor="#222"
+            android:fontFamily="@font/poppins_light"/>
     </LinearLayout>
+
+    <!-- BUS NAME -->
     <TextView
         android:id="@+id/bus_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="KSRTC"
-        app:layout_constraintStart_toEndOf="@+id/bus_time"
-        app:layout_constraintTop_toBottomOf="@+id/bus_route"
+        android:textSize="13sp"
+        android:textColor="#555"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/poppins_light"
+        app:layout_constraintStart_toStartOf="@id/bus_route"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@color/black"
-        android:fontFamily="sans-serif-condensed-light"/>
-    <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/bus_route"/>
+
+    <!-- ARRIVAL -->
+    <TextView
+
+        android:id="@+id/arrival_time"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/bus_name"
-        app:layout_constraintStart_toEndOf="@+id/bus_time"
-        app:layout_constraintEnd_toEndOf="parent">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:background="#F3F8F6"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="View in Map"
-                android:textSize="12sp"
-                android:textColor="@color/black"
-                android:fontFamily="sans-serif-condensed-light"/>
-            <ImageView
-                android:layout_width="6dp"
-                android:layout_height="6dp"
-                android:layout_marginStart="5dp"
-                android:src="@drawable/blue_circle"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+        android:text="Arriving in 5 Minutes"
+        android:textSize="12sp"
+        android:textColor="#888"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/poppins_light"
+        app:layout_constraintStart_toStartOf="@id/bus_route"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bus_name"/>
+
+    <!-- DIVIDER -->
     <View
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="1dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="#E6E6E6"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@android:color/darker_gray"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

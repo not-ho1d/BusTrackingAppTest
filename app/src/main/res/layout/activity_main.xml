@@ -8,25 +8,36 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="#1976D2"
-        android:elevation="4dp"
-        app:title="Bus Tracker"
-        app:titleTextColor="#FFFFFF"
-
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="#0073FA"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bus Tracker"
+        app:layout_constraintTop_toTopOf="@+id/top_bar"
+        app:layout_constraintStart_toStartOf="@+id/top_bar"
+        app:layout_constraintBottom_toBottomOf="@+id/top_bar"
+        android:fontFamily="@font/poppins_light"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
+        android:layout_marginLeft="20dp"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="-36dp">
+        tools:layout_editor_absoluteY="-36dp"
+        >
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -135,6 +146,8 @@
                     android:layout_width="300dp"
                     android:layout_height="50dp"
                     android:layout_marginTop="10dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:textSize="14sp"
                     android:background="@android:color/transparent"
                     android:hint="From Stand"
                     android:inputType="textNoSuggestions"
@@ -151,6 +164,8 @@
                     android:layout_width="300dp"
                     android:layout_height="50dp"
                     android:layout_marginTop="10dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:textSize="14sp"
                     android:background="@android:color/transparent"
                     android:hint="To Stand"
                     android:inputType="textNoSuggestions"
@@ -175,7 +190,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-smallcaps"
+                        android:fontFamily="@font/poppins_light"
                         android:text="Find Bus"
                         android:textColor="@color/light_black"
                         android:textSize="18sp" />
@@ -222,10 +237,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="6"
-                        android:fontFamily="sans-serif-smallcaps"
+                        android:fontFamily="@font/poppins_light"
                         android:text="View Live Map"
                         android:textColor="@color/light_black"
-                        android:textSize="18sp" />
+                        android:textSize="16sp" />
 
                     <ImageView
                         android:layout_width="40dp"

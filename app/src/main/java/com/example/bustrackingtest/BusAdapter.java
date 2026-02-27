@@ -7,9 +7,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 public class BusAdapter extends RecyclerView.Adapter<BusAdapter.Holder>{
-    FindBus.Bus[] data;
-    public BusAdapter(FindBus.Bus[] buses){
+    ArrayList<FindBus.Bus> data;
+    public BusAdapter(ArrayList<FindBus.Bus> buses){
         this.data = buses;
     }
     class Holder extends RecyclerView.ViewHolder{
@@ -28,15 +30,18 @@ public class BusAdapter extends RecyclerView.Adapter<BusAdapter.Holder>{
                 .inflate(R.layout.bus_view, parent, false);
         return new Holder(view);
     }
+    @Override
     public void onBindViewHolder(Holder holder,int position){
-        holder.bus_time.setText(data[position].time);
-        holder.to.setText(data[position].to);
-        holder.from.setText(data[position].from);
-        holder.name.setText(data[position].name);
+        FindBus.Bus bus = data.get(position);
+
+        holder.bus_time.setText(bus.time);
+        holder.to.setText(bus.to);
+        holder.from.setText(bus.from);
+        holder.name.setText(bus.name);
     }
     @Override
     public int getItemCount() {
-        return data.length;
+        return data.size();
     }
 
 
