@@ -1,10 +1,13 @@
 package com.example.bustrackingtest;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -29,8 +32,13 @@ public class MainActivity extends AppCompatActivity {
         AutoCompleteTextView toStand = findViewById(R.id.toStand);
         CardView find_bus_button = findViewById(R.id.find_bus_button);
         CardView view_map_button = findViewById(R.id.view_map_button);
+        ImageView settings = findViewById(R.id.settings);
 
-        String[] stands = {"dwaraka","mananthavady","4th-mile","thonichal","nadakkal","tharuvana"};
+        SharedPreferences pref = getSharedPreferences("pref",MODE_PRIVATE);
+        SharedPreferences.Editor storage = pref.edit();
+
+        String[] stands = {"dwaraka","mananthavady","4th-mile","thonichal","nadakkal","tharuvana","changadakkadavu","nadakkal","tharuvana",
+        "vellamunda","kanhirangad","korome","niravilpuzha"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.dropdown,stands);
         fromStand.setAdapter(adapter);
         toStand.setAdapter(adapter);
@@ -54,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
                         data.put("action","find_bus_search");
                         data.put("from",from);
                         data.put("to",to);
-
-                        URL url = new URL("http://10.167.170.30:8000/Api/");
+                        String server_url= pref.getString("server_url","127.0.0.0:8000/Api/");
+                        Log.d("URL", server_url);
+                        URL url = new URL(server_url);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("POST");
                         conn.setDoOutput(true);
@@ -111,6 +120,11 @@ public class MainActivity extends AppCompatActivity {
 
         view_map_button.setOnClickListener(v->{
             Intent i = new Intent(MainActivity.this,ViewInMap.class);
+            startActivity(i);
+        });
+
+        settings.setOnClickListener(v->{
+            Intent i = new Intent(MainActivity.this,Settings.class);
             startActivity(i);
         });
     }
