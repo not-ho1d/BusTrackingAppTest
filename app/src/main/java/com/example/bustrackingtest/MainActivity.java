@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         fromStand.setAdapter(adapter);
         toStand.setAdapter(adapter);
 
-
         find_bus_button.setOnClickListener(v->{
             //gets data from editText
             String from = fromStand.getText().toString().toLowerCase();
@@ -62,16 +61,25 @@ public class MainActivity extends AppCompatActivity {
                         data.put("action","find_bus_search");
                         data.put("from",from);
                         data.put("to",to);
-                        String server_url= pref.getString("server_url","127.0.0.0:8000/Api/");
-                        Log.d("URL", server_url);
+                        String server_url = pref.getString(
+                                "server_url",
+                                "http://192.168.1.5:8000/Api/"
+                        );
+
                         URL url = new URL(server_url);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("POST");
                         conn.setDoOutput(true);
+
+                        conn.setRequestProperty("Content-Type", "application/json");
+                        conn.setRequestProperty("Accept", "application/json");
+
+                        conn.setConnectTimeout(2000);
+                        conn.setReadTimeout(2000);
+
                         OutputStream os = conn.getOutputStream();
-                        os.write(data.toString().getBytes());
+                        os.write(data.toString().getBytes("UTF-8"));
                         os.close();
-                        conn.getResponseCode();
 
                         int responseCode = conn.getResponseCode();
 
@@ -102,17 +110,26 @@ public class MainActivity extends AppCompatActivity {
 //                                Log.d("BUS_DATA: ", bus_data.getJSONObject("bus_timetable").toString());
 //                            }
                             searchInfo.putString("search_result",bus_data_array.toString());
+                            searchInfo.putString("search_status","success");
                             runOnUiThread(()->{
                                 Intent i = new Intent(MainActivity.this,FindBus.class);
                                 i.putExtra("searchInfo",searchInfo);
                                 startActivity(i);
                             });
                         }else{
-                            Log.d("search_success", "fail");
+                            runOnUiThread(()->{
+                                Intent i = new Intent(MainActivity.this,FindBus.class);
+                                searchInfo.putString("search_status","fail");
+                                startActivity(i);
+                            });
                         }
 
                     }catch(Exception e){
-                        e.printStackTrace();
+                        runOnUiThread(()->{
+                            Intent i = new Intent(MainActivity.this,FindBus.class);
+                            searchInfo.putString("search_status","error");
+                            startActivity(i);
+                        });
                     }
                 }).start();
             }
