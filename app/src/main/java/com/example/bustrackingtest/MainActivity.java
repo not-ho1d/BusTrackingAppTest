@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         String[] stands = {"dwaraka","mananthavady","4th-mile","thonichal","nadakkal","tharuvana","changadakkadavu","nadakkal","tharuvana",
         "vellamunda","kanhirangad","korome","niravilpuzha"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.dropdown,stands);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown,stands);
         fromStand.setAdapter(adapter);
         toStand.setAdapter(adapter);
 

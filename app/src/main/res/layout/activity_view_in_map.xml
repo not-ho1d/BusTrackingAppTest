@@ -1,19 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ViewInMap">
 
     <LinearLayout
+        android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <org.osmdroid.views.MapView
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        android:layout_height="56dp"
+        android:background="#1976D2"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:src="@drawable/arrow_left"
+            app:tint="@color/white"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View in Map"
+            android:textColor="@color/white"
+            android:layout_marginTop="2sp"
+            android:textSize="17sp"
+            android:fontFamily="@font/poppins_light"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
     </LinearLayout>
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/top_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_bar">
+
+
+        <!-- Bottom Sheet -->
+        <LinearLayout
+            android:id="@+id/bottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bottom_sheet_bg"
+            android:padding="22dp"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+            <!-- Drag Handle -->
+            <View
+                android:layout_width="45dp"
+                android:layout_height="5dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="18dp"
+                android:background="#D0D0D0"/>
+
+            <!-- Title Row -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Want better results?"
+                    android:textSize="20sp"
+                    android:textColor="#1A1A1A"
+                    android:fontFamily="@font/poppins_light"/>
+
+                <ImageView
+                    android:id="@+id/bell"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/bell"
+                    android:background="@drawable/bell_bg_selector"
+                    android:padding="7dp"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+            </RelativeLayout>
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Help us improve bus timing accuracy by sharing your experience."
+                android:textSize="14sp"
+                android:textColor="#6A6A6A"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="18dp"
+                android:fontFamily="@font/poppins_light"/>
+
+            <!-- Question -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Was this bus late or early?"
+                android:textSize="16sp"
+                android:textColor="#222"
+                android:fontFamily="@font/poppins_light"/>
+
+            <!-- Options -->
+            <RadioGroup
+                android:id="@+id/statusGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <RadioButton
+                    android:id="@+id/early"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Early"
+                    android:textColor="#111111"
+                    android:fontFamily="@font/poppins_light"/>
+
+                <RadioButton
+                    android:id="@+id/ontime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="On Time"
+                    android:textColor="#111111"
+                    android:fontFamily="@font/poppins_light"/>
+
+                <RadioButton
+                    android:id="@+id/late"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Late"
+                    android:textColor="#111111"
+                    android:fontFamily="@font/poppins_light"/>
+
+            </RadioGroup>
+
+            <!-- Late Minutes -->
+            <EditText
+                android:id="@+id/lateMinutes"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:hint="How many minutes late?"
+                android:inputType="number"
+                android:background="@drawable/input_bg"
+                android:padding="12dp"
+                android:visibility="gone"
+                android:fontFamily="@font/poppins_light"/>
+
+            <!-- Early Minutes -->
+            <EditText
+                android:id="@+id/earlyMinutes"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+
+                android:hint="How many minutes early?"
+                android:inputType="number"
+                android:background="@drawable/input_bg"
+                android:padding="12dp"
+                android:visibility="gone"
+                android:fontFamily="@font/poppins_light"/>
+
+            <!-- Submit -->
+            <Button
+                android:id="@+id/submit"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:text="Submit Feedback"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:backgroundTint="#2B7CFF"
+                android:fontFamily="@font/poppins_light"/>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
