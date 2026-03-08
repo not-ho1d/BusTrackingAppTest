@@ -1,19 +1,25 @@
 package com.example.bustrackingtest;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import org.osmdroid.views.overlay.Polygon;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.json.JSONObject;
@@ -23,6 +29,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -30,12 +37,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ViewInMap extends AppCompatActivity {
     BottomSheetBehavior sheetBehavior;
     EditText lateMinutes;
     RadioGroup statusGroup;
+
+    volatile Boolean running = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,24 +55,90 @@ public class ViewInMap extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.back_button);
         backButton.setClickable(true);
         backButton.setOnClickListener(v->{
+            running = false;
             finish();
         });
 
         Configuration.getInstance().setUserAgentValue(getPackageName());
-
+        Configuration.getInstance().setTileFileSystemCacheMaxBytes(1024L * 1024L * 200L);
+        Configuration.getInstance().setTileFileSystemCacheTrimBytes(1024L * 1024L * 150L);
         MapView map = findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        //enable zoom in and out
+
+        ITileSource positronHD = new XYTileSource(
+                "CartoDB Positron HD",
+                0,
+                20,
+                256,
+                "@2x.png",
+                new String[]{
+                        "https://a.basemaps.cartocdn.com/light_all/",
+                        "https://b.basemaps.cartocdn.com/light_all/",
+                        "https://c.basemaps.cartocdn.com/light_all/",
+                        "https://d.basemaps.cartocdn.com/light_all/"
+                }
+        );
+
+        map.setTileSource(positronHD);
+
+    // enable zoom
         map.setMultiTouchControls(true);
 
         IMapController ctrl = map.getController();
         ctrl.setZoom(17.0);
         ctrl.setCenter(new GeoPoint(11.759431, 76.006005));
 
-        String busName = getIntent().getStringExtra("bus_name");
+        Intent intent = getIntent();
+
+        String busName = intent.getStringExtra("bus_name");
+        String routePoly = intent.getStringExtra("route_poly");
+
+        try {
+            JSONObject json = new JSONObject(routePoly);
+
+            JSONArray coords = json.getJSONArray("route_poly");
+
+            ArrayList<GeoPoint> points = new ArrayList<>();
+
+            for(int i = 0; i < coords.length(); i++){
+
+                JSONObject point = coords.getJSONObject(i);
+
+                double lat = point.getDouble("lat");
+                double lon = point.getDouble("lng");
+
+                points.add(new GeoPoint(lat, lon));
+            }
+
+            Polyline routeLine = new Polyline();
+            routeLine.setPoints(points);
+
+            routeLine.getOutlinePaint().setColor(Color.parseColor("#FF6F6F"));
+            routeLine.getOutlinePaint().setStrokeWidth(8f);
+
+            routeLine.getOutlinePaint().setAntiAlias(true);
+            routeLine.getOutlinePaint().setStrokeCap(android.graphics.Paint.Cap.ROUND);
+            routeLine.getOutlinePaint().setStrokeJoin(android.graphics.Paint.Join.ROUND);
+
+            map.getOverlayManager().add(routeLine);
+            map.invalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         SharedPreferences pref = getSharedPreferences("pref",MODE_PRIVATE);
         Marker marker = new Marker(map);
+
+
+
         Drawable drawable = getDrawable(R.drawable.bus);
+        Polygon circle = new Polygon();
+        circle.setFillColor(Color.parseColor("#337EC8FF")); // transparent light blue
+        circle.setStrokeColor(Color.parseColor("#7EC8FF"));
+        circle.setStrokeWidth(2f);
+
+        map.getOverlayManager().add(circle);
+
 
         Bitmap bitmap = Bitmap.createBitmap(
                 drawable.getIntrinsicWidth(),
@@ -122,7 +198,7 @@ public class ViewInMap extends AppCompatActivity {
         AtomicReference<Boolean> zoomOneTime = new AtomicReference<>(true);
 
             new Thread(() -> {
-                while(true) {
+                while(running) {
                     try {
                         JSONObject data = new JSONObject();
                         data.put("action", "find_bus_location");
@@ -179,16 +255,19 @@ public class ViewInMap extends AppCompatActivity {
 
                                 GeoPoint point = new GeoPoint(lat, lng);
                                 marker.setPosition(point);
+                                //circle.setPoints(Polygon.pointsAsCircle(circleCenter, 80.0));
+                                circle.setPoints(Polygon.pointsAsCircle(point, 280.0)); // 80m radius
                                 marker.setIcon(smallDrawable);
-                                marker.setAnchor(0.5f, 0.9f);
+                                marker.setAnchor(0.5f, 0.5f);
                                 if(zoomOneTime.get()) {
                                     map.getController().animateTo(point);
                                     zoomOneTime.set(false);
                                     map.getController().setZoom(15.0);
                                 }
 
-                                map.getOverlays().clear();
-                                map.getOverlays().add(marker);
+                                if(!map.getOverlays().contains(marker)){
+                                    map.getOverlays().add(marker);
+                                }
 
                                 map.invalidate();
 
@@ -200,5 +279,10 @@ public class ViewInMap extends AppCompatActivity {
                     }
                 }
             }).start();
+    }
+    @Override
+    protected void onDestroy(){
+        running=false;
+        super.onDestroy();
     }
 }
