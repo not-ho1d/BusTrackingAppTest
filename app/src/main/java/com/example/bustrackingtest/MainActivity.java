@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         AutoCompleteTextView toStand = findViewById(R.id.toStand);
         CardView find_bus_button = findViewById(R.id.find_bus_button);
         CardView view_map_button = findViewById(R.id.view_map_button);
+        CardView driver_access = findViewById(R.id.driver_login_button);
         ImageView settings = findViewById(R.id.settings);
 
         SharedPreferences pref = getSharedPreferences("pref",MODE_PRIVATE);
@@ -143,6 +144,17 @@ public class MainActivity extends AppCompatActivity {
         settings.setOnClickListener(v->{
             Intent i = new Intent(MainActivity.this,Settings.class);
             startActivity(i);
+        });
+
+        driver_access.setOnClickListener(v->{
+            Boolean isLoggedIn = pref.getBoolean("is_loggedin",false);
+            if(isLoggedIn){
+                Intent i = new Intent(MainActivity.this,driver_dashboard.class);
+                startActivity(i);
+            }else{
+                Intent i = new Intent(MainActivity.this,DriverLogin.class);
+                startActivity(i);
+            }
         });
     }
 }

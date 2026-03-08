@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/bus_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bus Name"
+        android:textSize="16sp"
+        android:textColor="#333333"
+        android:fontFamily="@font/poppins_light"/>
+
+    <TextView
+        android:id="@+id/bus_route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Route"
+        android:textSize="13sp"
+        android:textColor="#666666"
+        android:fontFamily="@font/poppins_light"/>
+
+    <TextView
+        android:id="@+id/bus_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="06:00"
+        android:textSize="13sp"
+        android:textColor="#D32F2F"
+        android:fontFamily="@font/poppins_light"/>
+
+</LinearLayout>
