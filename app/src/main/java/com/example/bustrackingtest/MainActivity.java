@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView settings = findViewById(R.id.settings);
 
         SharedPreferences pref = getSharedPreferences("pref",MODE_PRIVATE);
+        SharedPreferences driver_pref = getSharedPreferences("driver_pref",MODE_PRIVATE);
         SharedPreferences.Editor storage = pref.edit();
 
         String[] stands = {"dwaraka","mananthavady","4th-mile","thonichal","nadakkal","tharuvana","changadakkadavu","nadakkal","tharuvana",
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         driver_access.setOnClickListener(v->{
-            Boolean isLoggedIn = pref.getBoolean("is_loggedin",false);
+            Boolean isLoggedIn = driver_pref.getBoolean("isLoggedIn",false);
             if(isLoggedIn){
                 Intent i = new Intent(MainActivity.this,driver_dashboard.class);
                 startActivity(i);

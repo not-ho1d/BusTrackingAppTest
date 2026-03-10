@@ -7,4 +7,5 @@
     <color name="border_greywhite">#33FFFFFF</color>
     <color name="green">#119239</color>
     <color name="light_black">#4B4A4A</color>
+    <color name="hint_color">#92000000</color>
 </resources>

@@ -63,21 +63,21 @@
             app:layout_constraintTop_toTopOf="@+id/server_ip_layout"
             app:layout_constraintBottom_toBottomOf="@+id/server_ip_layout"
             app:layout_constraintStart_toStartOf="parent" />
-        <AutoCompleteTextView
+        <EditText
             android:id="@+id/server_url"
-            android:layout_width="300dp"
+            android:layout_width="250dp"
             android:layout_height="50dp"
-            android:fontFamily="@font/poppins_light"
-            android:textSize="14sp"
-            android:background="@android:color/transparent"
-            android:layout_marginStart="20dp"
             android:hint="Enter server url"
-            android:inputType="textNoSuggestions"
-            android:textColor="@color/light_black"
-            android:textColorHint="#DD4B4A4A"
+            android:inputType="textUri"
+            android:singleLine="true"
+            android:scrollHorizontally="true"
+            android:gravity="start|center_vertical"
+            android:textAlignment="viewStart"
+            android:textColor="#D8000000"
             android:paddingStart="10dp"
             app:layout_constraintStart_toEndOf="@+id/server_ip_indicator"
             app:layout_constraintTop_toTopOf="@id/server_ip_layout"
-            app:layout_constraintBottom_toBottomOf="@id/server_ip_layout"/>
+            app:layout_constraintBottom_toBottomOf="@id/server_ip_layout"
+            android:layout_marginRight="5dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
