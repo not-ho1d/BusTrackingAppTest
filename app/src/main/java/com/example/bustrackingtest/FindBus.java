@@ -19,8 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +36,7 @@ public class FindBus extends AppCompatActivity {
 
     static class Bus{
         String time,from,to,name;
+        Boolean returning;
     }
 
     @Override
@@ -59,6 +64,7 @@ public class FindBus extends AppCompatActivity {
                 try {
                     //JSONArray bus_data = new JSONArray(searchResult);
                     JSONArray busArray = new JSONArray(searchResult);
+
                     if(busArray.length() == 0){
                         LinearLayout err = findViewById(R.id.error);
                         err.setVisibility(View.VISIBLE);
@@ -71,15 +77,22 @@ public class FindBus extends AppCompatActivity {
                         String busName = bus.getString("bus_name");
                         String busTime = bus.getString("bus_time");
                         String busRoute = bus.getString("bus_route");
+                        Boolean returning = bus.getBoolean("returning");
                         int splitPos = busRoute.indexOf("-");
                         Log.d("BUS_NAME,TIME ", busName + "----" + busTime);
 
                         Bus b = new Bus();
                         b.time = busTime;
-                        b.from = busRoute.substring(0, splitPos);
-                        b.to = busRoute.substring(splitPos + 1);
+                        if(returning){
+                            b.returning = true;
+                            b.to = busRoute.substring(0, splitPos);
+                            b.from = busRoute.substring(splitPos + 1);
+                        }else{
+                            b.returning = false;
+                            b.from = busRoute.substring(0, splitPos);
+                            b.to = busRoute.substring(splitPos + 1);
+                        }
                         b.name = busName;
-
                         buses.add(b);
                     }
                 } catch (Exception e) {
@@ -93,6 +106,13 @@ public class FindBus extends AppCompatActivity {
 
             fromTv.setText(fromStand);
             toTv.setText(toStand);
+
+            Collections.sort(buses, new Comparator<Bus>() {
+                @Override
+                public int compare(Bus b1, Bus b2) {
+                    return b1.time.compareTo(b2.time);
+                }
+            });
 
             RecyclerView recycler = (RecyclerView) findViewById(R.id.recycler_view);
             recycler.setLayoutManager(new LinearLayoutManager(this));

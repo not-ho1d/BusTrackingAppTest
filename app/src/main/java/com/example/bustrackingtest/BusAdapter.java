@@ -25,17 +25,72 @@ import java.util.ArrayList;
 
 public class BusAdapter extends RecyclerView.Adapter<BusAdapter.Holder>{
     ArrayList<FindBus.Bus> data;
+
+    private String toAmPm(String time) {
+        try {
+            String[] hm = time.split(":");
+
+            int hour = Integer.parseInt(hm[0]);
+            int min = Integer.parseInt(hm[1]);
+
+            String ampm = "AM";
+
+            if (hour >= 12) {
+                ampm = "PM";
+            }
+
+            if (hour == 0) {
+                hour = 12; // 00 -> 12 AM
+            } else if (hour > 12) {
+                hour -= 12;
+            }
+
+            return String.format("%02d:%02d %s", hour, min, ampm);
+
+        } catch (Exception e) {
+            return time; // fallback if something breaks
+        }
+    }
+    private String getArrivalText(String busTime) {
+        try {
+            // current time
+            java.util.Calendar now = java.util.Calendar.getInstance();
+            int currMin = now.get(java.util.Calendar.HOUR_OF_DAY) * 60 +
+                    now.get(java.util.Calendar.MINUTE);
+
+            // bus time (HH:mm)
+            String[] hm = busTime.split(":");
+            int busMin = Integer.parseInt(hm[0]) * 60 +
+                    Integer.parseInt(hm[1]);
+
+            int diff = busMin - currMin;
+
+            // handle next-day buses
+            if (diff < 0) {
+                diff += 24 * 60;
+            }
+
+            // formatting
+            if (diff == 0) return "Arriving now";
+            if (diff < 60) return diff + " min";
+            return (diff / 60) + " hr " + (diff % 60) + " min";
+
+        } catch (Exception e) {
+            return "--";
+        }
+    }
     public BusAdapter(ArrayList<FindBus.Bus> buses){
         this.data = buses;
     }
     class Holder extends RecyclerView.ViewHolder{
-        TextView bus_time,to,from,name;
+        TextView bus_time,to,from,name,arriving_in;
         public Holder(View itemView){
             super(itemView);
             bus_time = itemView.findViewById(R.id.bus_time);
             to = itemView.findViewById(R.id.bus_to);
             from = itemView.findViewById(R.id.bus_from);
             name = itemView.findViewById(R.id.bus_name);
+            arriving_in = itemView.findViewById(R.id.arrival_time);
         }
     }
     @Override
@@ -48,10 +103,11 @@ public class BusAdapter extends RecyclerView.Adapter<BusAdapter.Holder>{
     public void onBindViewHolder(Holder holder, int position) {
         FindBus.Bus bus = data.get(position);
 
-        holder.bus_time.setText(bus.time);
+        holder.bus_time.setText(toAmPm(bus.time));
         holder.to.setText(bus.to);
         holder.from.setText(bus.from);
         holder.name.setText(bus.name);
+        holder.arriving_in.setText(getArrivalText(bus.time));
 
         holder.itemView.setOnClickListener(v -> {
             SharedPreferences pref = v.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
@@ -109,6 +165,8 @@ public class BusAdapter extends RecyclerView.Adapter<BusAdapter.Holder>{
                     ((Activity)v.getContext()).runOnUiThread(() -> {
                         Intent i = new Intent(v.getContext(), ViewInMap.class);
                         i.putExtra("bus_name",bus.name);
+                        i.putExtra("time",bus.time);
+                        i.putExtra("route_name",bus.from +"→"+bus.to);
                         i.putExtra("route_poly",result);
                         v.getContext().startActivity(i);
                     });

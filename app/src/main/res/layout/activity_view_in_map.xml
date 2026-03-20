@@ -73,6 +73,96 @@
                 android:layout_marginBottom="18dp"
                 android:background="#D0D0D0"/>
 
+            <!-- Bus Arrival Info -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/input_bg"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- Top Row (Time + Bell) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/arrivalTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="06:23 AM"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="#2B7CFF"
+                        android:fontFamily="@font/poppins_light"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <ImageView
+                        android:id="@+id/bell"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:src="@drawable/bell"
+                        android:background="@drawable/bell_bg_selector"
+                        android:padding="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="Notify when bus arrives"/>
+                </LinearLayout>
+
+                <!-- Bus Name -->
+                <TextView
+                    android:id="@+id/busName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bus 04"
+                    android:textSize="15sp"
+                    android:textColor="#111111"
+                    android:layout_marginTop="3dp"
+                    android:fontFamily="@font/poppins_light"/>
+
+                <!-- Route Row -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/routeName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thonichal → Kellur"
+                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:fontFamily="@font/poppins_light"/>
+
+                    <TextView
+                        android:id="@+id/predictedBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Predicted"
+                        android:textSize="10sp"
+                        android:textColor="#2B7CFF"
+                        android:background="@drawable/predicted_badge_bg"
+                        android:paddingLeft="7dp"
+                        android:paddingRight="7dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/poppins_light"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
             <!-- Title Row -->
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -86,16 +176,6 @@
                     android:textColor="#1A1A1A"
                     android:fontFamily="@font/poppins_light"/>
 
-                <ImageView
-                    android:id="@+id/bell"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/bell"
-                    android:background="@drawable/bell_bg_selector"
-                    android:padding="7dp"
-                    android:clickable="true"
-                    android:focusable="true"/>
 
             </RelativeLayout>
 
@@ -103,20 +183,21 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Help us improve bus timing accuracy by sharing your experience."
-                android:textSize="14sp"
-                android:textColor="#6A6A6A"
+                android:text="Help improve bus timing accuracy."
+                android:textSize="12sp"
+                android:textColor="#777777"
                 android:layout_marginTop="6dp"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="10dp"
                 android:fontFamily="@font/poppins_light"/>
 
             <!-- Question -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Was this bus late or early?"
-                android:textSize="16sp"
-                android:textColor="#222"
+                android:text="Was the bus early or late?"
+                android:textSize="13sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="6dp"
                 android:fontFamily="@font/poppins_light"/>
 
             <!-- Options -->
@@ -124,22 +205,26 @@
                 android:id="@+id/statusGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
 
                 <RadioButton
                     android:id="@+id/early"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Early"
-                    android:textColor="#111111"
+                    android:textSize="12sp"
+                    android:textColor="#444444"
                     android:fontFamily="@font/poppins_light"/>
 
                 <RadioButton
                     android:id="@+id/ontime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="On Time"
-                    android:textColor="#111111"
+                    android:text="On time"
+                    android:textSize="12sp"
+                    android:textColor="#444444"
+                    android:layout_marginStart="14dp"
                     android:fontFamily="@font/poppins_light"/>
 
                 <RadioButton
@@ -147,7 +232,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Late"
-                    android:textColor="#111111"
+                    android:textSize="12sp"
+                    android:textColor="#444444"
+                    android:layout_marginStart="14dp"
                     android:fontFamily="@font/poppins_light"/>
 
             </RadioGroup>
@@ -156,12 +243,15 @@
             <EditText
                 android:id="@+id/lateMinutes"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="10dp"
-                android:hint="How many minutes late?"
+                android:layout_height="42dp"
+                android:layout_marginTop="6dp"
+                android:hint="Minutes late"
+                android:textColorHint="#C0000000"
+                android:textSize="13sp"
                 android:inputType="number"
+                android:textColor="@color/black"
                 android:background="@drawable/input_bg"
-                android:padding="12dp"
+                android:padding="10dp"
                 android:visibility="gone"
                 android:fontFamily="@font/poppins_light"/>
 
@@ -169,13 +259,15 @@
             <EditText
                 android:id="@+id/earlyMinutes"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="10dp"
-
-                android:hint="How many minutes early?"
+                android:layout_height="42dp"
+                android:layout_marginTop="6dp"
+                android:hint="Minutes early"
+                android:textColorHint="#C0000000"
+                android:textColor="@color/black"
+                android:textSize="13sp"
                 android:inputType="number"
                 android:background="@drawable/input_bg"
-                android:padding="12dp"
+                android:padding="10dp"
                 android:visibility="gone"
                 android:fontFamily="@font/poppins_light"/>
 
@@ -183,11 +275,11 @@
             <Button
                 android:id="@+id/submit"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:text="Submit Feedback"
+                android:layout_height="44dp"
+                android:layout_marginTop="12dp"
+                android:text="Submit"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
+                android:textSize="13sp"
                 android:backgroundTint="#2B7CFF"
                 android:fontFamily="@font/poppins_light"/>
 

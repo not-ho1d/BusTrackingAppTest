@@ -24,7 +24,7 @@
         android:textStyle="bold"
         android:paddingEnd="20dp"
         android:paddingStart="20dp"
-        android:textColor="#0A1A3A"
+        android:textColor="#1976D2"
         android:fontFamily="@font/poppins_light"
         />
     </LinearLayout>

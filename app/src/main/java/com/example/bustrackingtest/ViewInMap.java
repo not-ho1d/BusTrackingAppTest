@@ -1,17 +1,24 @@
 package com.example.bustrackingtest;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -38,6 +45,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ViewInMap extends AppCompatActivity {
@@ -51,6 +59,10 @@ public class ViewInMap extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_in_map);
+
+        SharedPreferences prefs = getSharedPreferences("notif_pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
 
         ImageView backButton = findViewById(R.id.back_button);
         backButton.setClickable(true);
@@ -91,6 +103,17 @@ public class ViewInMap extends AppCompatActivity {
 
         String busName = intent.getStringExtra("bus_name");
         String routePoly = intent.getStringExtra("route_poly");
+        String routeName = intent.getStringExtra("route_name");
+        String time = intent.getStringExtra("time");
+        //String time = "01:01";
+        TextView at = findViewById(R.id.arrivalTime);
+        TextView bn = findViewById(R.id.busName);
+        TextView rn = findViewById(R.id.routeName);
+
+        at.setText(time);
+        bn.setText(busName);
+        rn.setText(routeName);
+
 
         try {
             JSONObject json = new JSONObject(routePoly);
@@ -149,7 +172,7 @@ public class ViewInMap extends AppCompatActivity {
         View sheet = findViewById(R.id.bottomSheet);
 
         sheetBehavior = BottomSheetBehavior.from(sheet);
-        sheetBehavior.setPeekHeight(200);
+        sheetBehavior.setPeekHeight(330);
 
         RadioGroup group = findViewById(R.id.statusGroup);
         EditText early = findViewById(R.id.earlyMinutes);
@@ -169,10 +192,84 @@ public class ViewInMap extends AppCompatActivity {
         });
         ImageView bell = findViewById(R.id.bell);
 
+        boolean savedState = prefs.getBoolean("bell_" + time, false);
+        bell.setSelected(savedState);
+
         bell.setOnClickListener(v -> {
 
-            bell.setSelected(!bell.isSelected());
+            String[] parts = time.split(":");
+            int timeh = Integer.parseInt(parts[0]);
+            int timem = Integer.parseInt(parts[1]);
 
+            int requestCode = timeh * 100 + timem;
+
+            Intent i = new Intent(this, BusNotification.class);
+            i.putExtra("bus_time", time);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    this,
+                    requestCode,
+                    i,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+            );
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            if (!bell.isSelected()) {
+                bell.setSelected(true);
+                editor.putBoolean("bell_" + time, bell.isSelected());
+                editor.apply();
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, timeh);
+                calendar.set(Calendar.MINUTE, timem);
+                calendar.set(Calendar.SECOND, 1);
+                calendar.add(Calendar.MINUTE, -2);
+
+                if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+                    calendar.add(Calendar.DAY_OF_MONTH, 1);
+                }
+
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.getTimeInMillis(),
+                                pendingIntent
+                        );
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        alarmManager.setExact(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.getTimeInMillis(),
+                                pendingIntent
+                        );
+                    } else {
+                        alarmManager.set(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.getTimeInMillis(),
+                                pendingIntent
+                        );
+                    }
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+
+                    // fallback (still schedules, but less precise)
+                    alarmManager.set(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.getTimeInMillis(),
+                            pendingIntent
+                    );
+                }
+                Toast.makeText(this, "Notification ON for " + time, Toast.LENGTH_SHORT).show();
+
+            } else {
+                bell.setSelected(false);
+                editor.putBoolean("bell_" + time, bell.isSelected());
+                editor.apply();
+                alarmManager.cancel(pendingIntent);
+
+                Toast.makeText(this, "Notification OFF for " + time, Toast.LENGTH_SHORT).show();
+            }
         });
 
         findViewById(R.id.submit).setOnClickListener(v -> {
@@ -199,6 +296,7 @@ public class ViewInMap extends AppCompatActivity {
 
             new Thread(() -> {
                 while(running) {
+                    if (!running) break;
                     try {
                         JSONObject data = new JSONObject();
                         data.put("action", "find_bus_location");
@@ -252,7 +350,7 @@ public class ViewInMap extends AppCompatActivity {
                             double lng = coord.getDouble("lng");
 
                             runOnUiThread(() -> {
-
+                                if (!running || isFinishing() || isDestroyed()) return;
                                 GeoPoint point = new GeoPoint(lat, lng);
                                 marker.setPosition(point);
                                 //circle.setPoints(Polygon.pointsAsCircle(circleCenter, 80.0));
@@ -280,6 +378,9 @@ public class ViewInMap extends AppCompatActivity {
                 }
             }).start();
     }
+
+
+
     @Override
     protected void onDestroy(){
         running=false;
