@@ -18,12 +18,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="#0073FA"
         />
+<!--    <ImageView-->
+<!--        android:id="@+id/app_logo"-->
+<!--        android:layout_width="30dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:src="@mipmap/ic_launcher"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/top_bar"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        />-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bus Tracker"
+        android:text="Dhe... Bus"
         app:layout_constraintTop_toTopOf="@+id/top_bar"
-        app:layout_constraintStart_toStartOf="@+id/top_bar"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/top_bar"
         android:fontFamily="@font/poppins_light"
         android:textColor="@android:color/white"
@@ -224,6 +233,7 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="30dp"
+            android:visibility="gone"
             android:gravity="center_horizontal|center_vertical"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -268,6 +278,7 @@
         </LinearLayout>
         <View
             android:layout_width="250dp"
+            android:visibility="gone"
             android:layout_height="2dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"

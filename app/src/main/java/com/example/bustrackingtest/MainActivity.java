@@ -23,6 +23,70 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
+    private void getAllRoutes() {
+
+        new Thread(() -> {
+            try {
+                JSONObject data = new JSONObject();
+                data.put("action", "get_all_routes");
+
+                String server_url = getSharedPreferences("app_data", MODE_PRIVATE)
+                        .getString("server_url", "http://192.168.1.5:8000/Api/");
+
+                URL url = new URL(server_url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+
+                conn.setConnectTimeout(2000);
+                conn.setReadTimeout(2000);
+
+                OutputStream os = conn.getOutputStream();
+                os.write(data.toString().getBytes("UTF-8"));
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+
+                InputStream is;
+
+                if (responseCode >= 200 && responseCode < 300) {
+                    is = conn.getInputStream();
+                } else {
+                    is = conn.getErrorStream();
+                }
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder response = new StringBuilder();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                String responseText = response.toString();
+
+                runOnUiThread(() -> {
+                    try {
+                        JSONObject res = new JSONObject(responseText);
+                        Log.d("API_RESPONSE", res.toString());
+                    } catch (Exception e) {
+                        Log.d("API_RESPONSE", responseText);
+                    }
+                });
+
+            } catch (Exception e) {
+                runOnUiThread(() ->
+                        Log.d("API_ERROR", "Request failed")
+                );
+            }
+        }).start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("pref",MODE_PRIVATE);
         SharedPreferences driver_pref = getSharedPreferences("driver_pref",MODE_PRIVATE);
         SharedPreferences.Editor storage = pref.edit();
-
+        getAllRoutes();
         String[] stands = {"dwaraka","mananthavady","4th-mile","thonichal","nadakkal","tharuvana","changadakkadavu","nadakkal","tharuvana",
         "vellamunda","kanhirangad","korome","niravilpuzha"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown,stands);

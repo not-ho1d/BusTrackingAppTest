@@ -54,7 +54,76 @@ public class ViewInMap extends AppCompatActivity {
     RadioGroup statusGroup;
 
     volatile Boolean running = true;
+    private void sendFeedback(int early, int late) {
 
+        new Thread(() -> {
+            try {
+                JSONObject data = new JSONObject();
+                data.put("action", "add_new_timetable");
+                data.put("bus_name", ((TextView)findViewById(R.id.busName)).getText().toString());
+                data.put("time_bracket", ((TextView)findViewById(R.id.arrivalTime)).getText().toString());
+                data.put("early", early);
+                data.put("late", late);
+
+                String server_url = getSharedPreferences("pref", MODE_PRIVATE)
+                        .getString("server_url", "http://192.168.1.5:8000/Api/");
+
+                URL url = new URL(server_url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+
+                conn.setConnectTimeout(2000);
+                conn.setReadTimeout(2000);
+
+                OutputStream os = conn.getOutputStream();
+                os.write(data.toString().getBytes("UTF-8"));
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+
+                InputStream is;
+
+                if (responseCode >= 200 && responseCode < 300) {
+                    is = conn.getInputStream();
+                } else {
+                    is = conn.getErrorStream();
+                }
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder response = new StringBuilder();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                String responseText = response.toString();
+                JSONObject res = new JSONObject(responseText);
+
+                boolean success = res.optBoolean("success", true);
+
+                runOnUiThread(() -> {
+                    if (success) {
+                        Toast.makeText(this, "Submitted!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        String msg = res.optString("reason", "Failed");
+                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } catch (Exception e) {
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
+                );
+            }
+        }).start();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -274,16 +343,30 @@ public class ViewInMap extends AppCompatActivity {
 
         findViewById(R.id.submit).setOnClickListener(v -> {
 
-            int id = statusGroup.getCheckedRadioButtonId();
+            RadioGroup grp = findViewById(R.id.statusGroup);
+            int selectedId = grp.getCheckedRadioButtonId();
 
-            if(id == -1){
-                Toast.makeText(this,"Select an option",Toast.LENGTH_SHORT).show();
+            if (selectedId == -1) {
+                Toast.makeText(this, "Select early/on time/late", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String mins = lateMinutes.getText().toString();
+            EditText earlyMinutes = findViewById(R.id.earlyMinutes);
+            EditText lateMinutes = findViewById(R.id.lateMinutes);
 
-            Toast.makeText(this,"Feedback Submitted", Toast.LENGTH_SHORT).show();
+            int erly = 0;
+            int lte = 0;
+
+            if (selectedId == R.id.early) {
+                String val = earlyMinutes.getText().toString();
+                erly = val.isEmpty() ? 0 : Integer.parseInt(val);
+            }
+            else if (selectedId == R.id.late) {
+                String val = lateMinutes.getText().toString();
+                lte = val.isEmpty() ? 0 : Integer.parseInt(val);
+            }
+
+            sendFeedback(erly, lte);
         });
 
         android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
