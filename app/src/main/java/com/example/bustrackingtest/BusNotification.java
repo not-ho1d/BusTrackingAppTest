@@ -29,7 +29,7 @@ public class BusNotification extends BroadcastReceiver {
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, "bus_channel")
-                        .setSmallIcon(R.drawable.bus)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("Dhe bus")
                         .setContentText("Your bus will arrive shortly")
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
