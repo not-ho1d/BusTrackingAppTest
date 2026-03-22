@@ -54,6 +54,68 @@ public class ViewInMap extends AppCompatActivity {
     RadioGroup statusGroup;
 
     volatile Boolean running = true;
+
+    private void checkLiveStatus(String busName) {
+
+        new Thread(() -> {
+            try {
+                JSONObject data = new JSONObject();
+                data.put("action", "live_or_not");
+                data.put("bus_name", busName);
+
+                String server_url = getSharedPreferences("pref", MODE_PRIVATE)
+                        .getString("server_url", "http://192.168.1.5:8000/Api/");
+
+                URL url = new URL(server_url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+
+                OutputStream os = conn.getOutputStream();
+                os.write(data.toString().getBytes("UTF-8"));
+                os.close();
+
+                InputStream is = conn.getResponseCode() >= 200 && conn.getResponseCode() < 300
+                        ? conn.getInputStream()
+                        : conn.getErrorStream();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder response = new StringBuilder();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                JSONObject res = new JSONObject(response.toString());
+                boolean isLive = res.getBoolean("is_live");
+
+                runOnUiThread(() -> {
+                    TextView badge = findViewById(R.id.predictedBadge);
+
+                    if (isLive) {
+                        badge.setText("Live");
+                        badge.setTextColor(Color.parseColor("#FFFFFF"));
+                        badge.setBackgroundResource(R.drawable.live_badge_bg);
+                    } else {
+                        badge.setText("Predicted");
+                        badge.setTextColor(Color.parseColor("#2B7CFF"));
+                        badge.setBackgroundResource(R.drawable.predicted_badge_bg);
+                    }
+                });
+
+            } catch (Exception e) {
+                runOnUiThread(() ->
+                        Log.d("API_ERROR", "live check failed")
+                );
+            }
+        }).start();
+    }
     private void sendFeedback(int early, int late) {
 
         new Thread(() -> {
@@ -171,6 +233,7 @@ public class ViewInMap extends AppCompatActivity {
         Intent intent = getIntent();
 
         String busName = intent.getStringExtra("bus_name");
+        checkLiveStatus(busName);
         String routePoly = intent.getStringExtra("route_poly");
         String routeName = intent.getStringExtra("route_name");
         String time = intent.getStringExtra("time");
@@ -425,6 +488,7 @@ public class ViewInMap extends AppCompatActivity {
                         String responseText = response.toString();
                         JSONObject res = new JSONObject(responseText);
                         boolean status = res.getBoolean("live_location");
+
                         if (status) {
 
                             JSONObject coord = res.getJSONObject("data");
